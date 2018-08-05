@@ -1,0 +1,34 @@
+/**
+  * A library of standard reusable types
+  */
+
+namespace composer.base
+
+abstract participant User {
+  o String firstName  optional
+  o String lastName  optional
+  o String middleName  optional
+  o ContactDetails contactDetails optional
+}
+
+concept ContactDetails {
+  o String email  optional
+  o String mobilePhone  optional
+  o String office optional
+  o Address address optional
+}
+
+/**
+ * A concept for a simple street address
+ */
+concept Address {
+  o String city optional
+  o String country optional
+  o String locality optional
+  o String region optional
+  o String street optional
+  o String street2 optional
+  o String street3 optional
+  o String postalCode optional
+  o String postOfficeBoxNumber optional
+}

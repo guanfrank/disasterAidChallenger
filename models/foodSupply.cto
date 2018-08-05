@@ -1,0 +1,77 @@
+/*
+ * 
+ */
+
+namespace composer.aid.supply
+import composer.base.User
+
+enum Status{
+  o INITIALREQUEST
+  o EXEMPTCHECKREQ
+  o HAZARDANALYSISCHECKREQ
+  o CHECKCOMPLETED
+}
+
+concept Product {
+  o String productId
+  o String quantity
+  o String countryId
+}
+
+participant localResue identified by localResueId extends User {
+  o  String localResueId
+  o  Product[] products
+}
+
+participant Importer identified by importerId extends User {
+  o  String importerId
+}
+
+participant Supplier identified by supplierId extends User {
+  o  String supplierId
+  o  String countryId
+  o  String orgId
+}
+
+participant Regulator identified by regulatorId{
+  o String regulatorId
+  o String location
+  o String[] exemptedOrgIds
+  o String[] exemptedProductIds
+}
+
+asset ProductListingContract identified by listingtId {
+  o String listingtId
+  o Status status
+  o Product[] products
+  --> User owner
+  --> Supplier supplier
+}
+
+
+// Supplier creates a product listing contract for the list of products
+transaction createProductListing{
+  o String[] products
+  --> User user
+}
+
+// Supplier --> Importer
+// Importer --> localResue
+transaction transferListing{
+  o String ownerType
+  --> User newOwner
+  --> ProductListingContract productListing
+}
+
+// Importer --> Regulator w/o hazard analysis i.e. iniitial check. onSuccess transfer assests to localResue on failure send back to importer for hazard analysis
+// Importer --> Regulator with hazard analysis. Assumes the Importer has sent the hazard analysis report to Regulator. onSuccess transfer assests to localResue
+transaction  checkProducts{
+  --> Regulator regulator
+  --> ProductListingContract productListing
+}
+
+transaction updateExemptedList{
+  o String[] newExemptedOrgIds
+  o String[] newExemptedProductIds
+  --> Regulator regulator
+}
